@@ -1,5 +1,5 @@
 {
-  "name": "tessium",
+  "name": "@tessiumdev/client",
   "version": "0.0.1",
   "description": "Minimal WebSocket client for Tessium, the realtime Solana data API",
   "type": "module",

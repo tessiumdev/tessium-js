@@ -1,4 +1,4 @@
-# tessium
+# @tessiumdev/client
 
 Minimal JavaScript client for [Tessium](https://tessium.dev) — a realtime Solana
 data API. Open one WebSocket, subscribe to the streams you need, and receive
@@ -18,7 +18,7 @@ modern browser.
 ## Install
 
 ```bash
-npm i tessium
+npm i @tessiumdev/client
 ```
 
 ## Watch new token launches
@@ -26,7 +26,7 @@ npm i tessium
 Every new token on pump.fun, printed as it happens:
 
 ```js
-import { events } from 'tessium'
+import { events } from '@tessiumdev/client'
 
 for await (const frame of events('YOUR_API_KEY', 'launches', {
   platforms: ['pumpfun'],
@@ -48,7 +48,7 @@ production keys server-side.
 ## Also here
 
 ```js
-import { ENDPOINT, STREAMS, endpoint, subscribeFrame } from 'tessium'
+import { ENDPOINT, STREAMS, endpoint, subscribeFrame } from '@tessiumdev/client'
 ```
 
 `endpoint()` builds the URL, `subscribeFrame()` builds the subscribe frame —
