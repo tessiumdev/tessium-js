@@ -1,0 +1,43 @@
+{
+  "name": "tessium",
+  "version": "0.0.1",
+  "description": "Minimal WebSocket client for Tessium, the realtime Solana data API",
+  "type": "module",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    }
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "keywords": [
+    "solana",
+    "websocket",
+    "realtime",
+    "blockchain",
+    "trading",
+    "streaming",
+    "api"
+  ],
+  "homepage": "https://tessium.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tessiumdev/tessium-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tessiumdev/tessium-js/issues"
+  },
+  "author": "Tessium <contact@tessium.dev>",
+  "license": "MIT",
+  "sideEffects": false
+}
