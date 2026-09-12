@@ -12,9 +12,6 @@ Eight streams over a single connection: `launches`, `migrations`,
 Zero dependencies — it uses the runtime's own `WebSocket`. Node 22+ or any
 modern browser.
 
-> **Preview.** `0.0.x` tracks the published protocol and has not been exercised
-> against a production endpoint yet. Pin an exact version.
-
 ## Install
 
 ```bash
@@ -36,14 +33,66 @@ for await (const frame of events('YOUR_API_KEY', 'launches', {
 }
 ```
 
-Frames arrive whole rather than unwrapped, because `frame.cursor` is what you
-persist after processing an event — it is how you
-[replay a short disconnect](https://tessium.dev/docs/protocol/cursor) instead of
-losing the gap.
-
 An [API key](https://tessium.dev/dashboard) on the
 [free plan](https://tessium.dev/pricing) needs no payment details. Keep
 production keys server-side.
+
+## Several streams, one connection
+
+`events()` spends a connection per stream, and a plan sells only a few. Reach for
+`connect()` the moment you want a second one — every event names the subscription
+it came from:
+
+```js
+import { connect } from '@tessiumdev/client'
+
+const tessium = connect('YOUR_API_KEY')
+tessium.subscribe('launches', { platforms: ['pumpfun'] }, { sub: 'new' })
+tessium.subscribe('token_trades', { mint: 'So11111111111111111111111111111111111111112' }, { sub: 'sol' })
+
+for await (const frame of tessium) {
+  if (frame.sub === 'new') console.log('launch', frame.data.symbol)
+  else console.log('trade', frame.data.tradeType, frame.data.valueUsd)
+}
+```
+
+## Disconnects are handled for you
+
+The socket will end — networks drop, and the service drains its sessions on every
+deploy. The client reopens it with a jittered backoff and resubscribes **from the
+last cursor it saw**, so the gap is filled by the replay window rather than lost.
+Nothing is required of you.
+
+Two details worth knowing:
+
+- Replay is a paid capability. On the free plan the server refuses the cursor, and
+  the client resubscribes live instead of giving up — you keep the stream, you just
+  lose the events from the seconds you were away.
+- Refusals raise. A wrong key, a stream the plan does not carry, `detail: "full"`
+  without it — each throws a `TessiumError` carrying `code`, `feature` and the
+  cheapest `upgrade` that lifts it. Nothing fails quietly.
+
+```js
+import { connect, TessiumError } from '@tessiumdev/client'
+
+const tessium = connect('YOUR_API_KEY', {
+  onNotice: (n) => console.warn(n.code, n.message),
+})
+tessium.subscribe('token_trades', { mint: MINT })
+
+try {
+  for await (const frame of tessium) handle(frame)
+} catch (err) {
+  if (err instanceof TessiumError) console.error(err.code, err.feature, err.upgrade)
+  else throw err
+}
+```
+
+`onNotice` is where the server's own remarks arrive: `server_restart` before a
+handover, `gap` when a resume fell outside the window, `dropped` when a reader is
+too slow to keep up.
+
+Pass `{ reconnect: false }` for a single socket that ends when it ends.
 
 ## Also here
 
