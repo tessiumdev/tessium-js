@@ -13,6 +13,9 @@
   },
   "files": [
     "index.js",
+    "client.js",
+    "errors.js",
+    "protocol.js",
     "index.d.ts",
     "README.md",
     "LICENSE"
